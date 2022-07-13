@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.dao.DiscussPostMapper">
+    <sql id="selectFields">
+        id,user_id,title,content,`type`,status,create_time,comment_count,score
+    </sql>
+    <!--查询帖子 || 我发布的帖子  List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit);-->
+    <!--select * from table limit (start-1)*limit,limit; 其中start是页码，limit是每页显示的条数。-->
+    <select id="selectDiscussPosts" resultType="DiscussPost">
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where status!=2
+        <if test="userId!=0">
+            and user_id = #{userId}  <!--注意哪里是表里的，那里是参数-->
+        </if>
+        order by `type` desc,create_time desc
+        limit #{offset},#{limit}
+    </select>
+
+    <!--int selectDiscussPostRows(@Param("userId") int userId);-->
+    <select id="selectDiscussPostRows" resultType="int">
+        select count(id)
+        from discuss_post
+        where status!=2
+        <if test="userId!=0">
+            and user_id = #{userId}
+        </if>
+    </select>
+</mapper>
